@@ -4,7 +4,7 @@ Data Pipelines - Infrastructure
 
 Infrastructure component of a Data Workflow Management system using these components:
 
-- `Airflow <https://airflow.apache.org/docs/1.10.9/>`_ | version 1.10.9
+- `Airflow <https://airflow.apache.org/docs/1.10.10/>`_ | version 1.10.10
 
 *************
 Prerequisties
@@ -31,7 +31,7 @@ For first-time setup, get the `Makester project <https://github.com/loum/makeste
 
 Keep `Makester project <https://github.com/loum/makester.git>`_ up-to-date with::
 
-    $ git submodule update --remote --merge
+    $ make submodule-update
 
 Setup the environment::
 
@@ -44,13 +44,11 @@ Infrastructure Build and Setup
 Start Infrastructure Components
 ===============================
 
-To build a Dockerised Airflow instance running under `Celery Executor mode <https://airflow.apache.org/docs/1.10.9/executor/celery.html?highlight=celery%20executor>`_::
+To build a Dockerised Airflow instance running under `Celery Executor mode <https://airflow.apache.org/docs/1.10.10/executor/celery.html?highlight=celery%20executor>`_::
 
     $ make local-build-up
 
 Naviagate to the `Airflow Console <http://localhost:8080/>`_
-
-The ``docker-compose.yml`` file is taken directly from `this GitHub link <https://github.com/puckel/docker-airflow/blob/1.10.9/docker-compose-CeleryExecutor.yml>`_
 
 Destroy Infrastructure Components
 =================================

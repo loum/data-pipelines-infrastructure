@@ -1,3 +1,8 @@
+# Project files.
+#
+data-pipelines-infrastructure/files/envfile
+env.mk
+
 *.py[cod]
 *.swp
 *.swo
@@ -37,9 +42,7 @@ coverage.xml
 .pydevproject
 
 # Local virtual environment
-venv
-2env
-3env
+[23v]env
 
 # py.test
 .cache
@@ -63,9 +66,3 @@ test.env
 # Spark
 derby.log
 metastore_db
-
-# CNP
-.data-kafka-connect/*.processed
-
-# Kafka Connect dynamically created connector configs
-*s3.properties.json
