@@ -56,3 +56,19 @@ Destroy Infrastructure Components
 To release all Docker resources::
 
     $ make local-build-down
+
+*********
+Image Tag
+*********
+
+To tag the image as ``latest``::
+
+    $ make tag
+
+Or to align with tagging policy ``<airflow-version>-<data-pipeline-dags-tag>-<image-release-number>``::
+
+    $ make tag-version
+
+.. note::
+
+    Control version values by setting ``MAKESTER__VERSION`` and ``MAKESTER__RELEASE_NUMBER`` in the project `Makefile <https://github.com/loum/data-pipelines-infrastructure/blob/master/Makefile>`_.

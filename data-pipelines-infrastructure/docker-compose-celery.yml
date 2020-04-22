@@ -17,7 +17,7 @@ services:
             - postgres-vol:/var/lib/postgresql/data/pgdata
 
     init-db:
-        image: apache/airflow:1.10.10-python3.6
+        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-initdb
         depends_on:
             - postgres
@@ -28,7 +28,7 @@ services:
         command: initdb
 
     scheduler:
-        image: apache/airflow:1.10.10-python3.6
+        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-scheduler
         depends_on:
             - init-db
@@ -40,7 +40,7 @@ services:
         command: scheduler
 
     webserver:
-        image: apache/airflow:1.10.10-python3.6
+        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-webserver
         env_file:
             - ./files/envfile
@@ -53,7 +53,7 @@ services:
         command: webserver
 
     worker:
-        image: apache/airflow:1.10.10-python3.6
+        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-worker
         env_file:
             - ./files/envfile
