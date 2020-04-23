@@ -1,0 +1,164 @@
+services:
+  init-db:
+    command: initdb
+    container_name: airflow-initdb
+    depends_on:
+    - postgres
+    environment:
+      AIRFLOW_HOME: /opt/airflow/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/1
+      AIRFLOW__CORE__BASE_LOG_FOLDER: $${AIRFLOW_HOME}/logs
+      AIRFLOW__CORE__DAGS_FOLDER: /home/airflow/.local/lib/python3.6/site-packages/data_pipelines_dags/dags
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: '30'
+      AIRFLOW__CORE__PLUGINS_FOLDER: $${AIRFLOW_HOME}/plugins
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+      AIRFLOW__SCHEDULER__PRINT_STATS_INTERVAL: '5'
+      AIRFLOW__WEBSERVER__WEB_SERVER_PORT: '8888'
+      AIRFLOW__WEBSERVER__WORKERS: '1'
+      POSTGRES_DB: airflow
+      POSTGRES_EXTRAS: ''
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: airflow
+      REDIS_DBNUM: '1'
+      REDIS_HOST: redis
+      REDIS_PASSWORD: redispass
+      REDIS_PORT: '6379'
+      REDIS_PROTO: redis://
+    image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+    restart: "no"
+    volumes:
+    - airflow-vol:/opt/airflow:rw
+  postgres:
+    container_name: airflow-postgres
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_USER: airflow
+    image: postgres:9.6
+    ports:
+    - published: 5432
+      target: 5432
+    volumes:
+    - postgres-vol:/var/lib/postgresql/data/pgdata:rw
+  redis:
+    container_name: airflow-redis
+    image: redis:5.0.5
+    ports:
+    - published: 6379
+      target: 6379
+  scheduler:
+    command: scheduler
+    container_name: airflow-scheduler
+    depends_on:
+    - init-db
+    - redis
+    environment:
+      AIRFLOW_HOME: /opt/airflow/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/1
+      AIRFLOW__CORE__BASE_LOG_FOLDER: $${AIRFLOW_HOME}/logs
+      AIRFLOW__CORE__DAGS_FOLDER: /home/airflow/.local/lib/python3.6/site-packages/data_pipelines_dags/dags
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: '30'
+      AIRFLOW__CORE__PLUGINS_FOLDER: $${AIRFLOW_HOME}/plugins
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+      AIRFLOW__SCHEDULER__PRINT_STATS_INTERVAL: '5'
+      AIRFLOW__WEBSERVER__WEB_SERVER_PORT: '8888'
+      AIRFLOW__WEBSERVER__WORKERS: '1'
+      POSTGRES_DB: airflow
+      POSTGRES_EXTRAS: ''
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: airflow
+      REDIS_DBNUM: '1'
+      REDIS_HOST: redis
+      REDIS_PASSWORD: redispass
+      REDIS_PORT: '6379'
+      REDIS_PROTO: redis://
+    image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+    volumes:
+    - airflow-vol:/opt/airflow:rw
+  webserver:
+    command: webserver
+    container_name: airflow-webserver
+    depends_on:
+    - scheduler
+    environment:
+      AIRFLOW_HOME: /opt/airflow/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/1
+      AIRFLOW__CORE__BASE_LOG_FOLDER: $${AIRFLOW_HOME}/logs
+      AIRFLOW__CORE__DAGS_FOLDER: /home/airflow/.local/lib/python3.6/site-packages/data_pipelines_dags/dags
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: '30'
+      AIRFLOW__CORE__PLUGINS_FOLDER: $${AIRFLOW_HOME}/plugins
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+      AIRFLOW__SCHEDULER__PRINT_STATS_INTERVAL: '5'
+      AIRFLOW__WEBSERVER__WEB_SERVER_PORT: '8888'
+      AIRFLOW__WEBSERVER__WORKERS: '1'
+      POSTGRES_DB: airflow
+      POSTGRES_EXTRAS: ''
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: airflow
+      REDIS_DBNUM: '1'
+      REDIS_HOST: redis
+      REDIS_PASSWORD: redispass
+      REDIS_PORT: '6379'
+      REDIS_PROTO: redis://
+    image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+    labels:
+      kompose.service.type: LoadBalancer
+    ports:
+    - published: 8888
+      target: 8888
+    volumes:
+    - airflow-vol:/opt/airflow:rw
+  worker:
+    command: worker
+    container_name: airflow-worker
+    depends_on:
+    - scheduler
+    environment:
+      AIRFLOW_HOME: /opt/airflow/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/1
+      AIRFLOW__CORE__BASE_LOG_FOLDER: $${AIRFLOW_HOME}/logs
+      AIRFLOW__CORE__DAGS_FOLDER: /home/airflow/.local/lib/python3.6/site-packages/data_pipelines_dags/dags
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: '30'
+      AIRFLOW__CORE__PLUGINS_FOLDER: $${AIRFLOW_HOME}/plugins
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "True"
+      AIRFLOW__SCHEDULER__PRINT_STATS_INTERVAL: '5'
+      AIRFLOW__WEBSERVER__WEB_SERVER_PORT: '8888'
+      AIRFLOW__WEBSERVER__WORKERS: '1'
+      POSTGRES_DB: airflow
+      POSTGRES_EXTRAS: ''
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: airflow
+      REDIS_DBNUM: '1'
+      REDIS_HOST: redis
+      REDIS_PASSWORD: redispass
+      REDIS_PORT: '6379'
+      REDIS_PROTO: redis://
+    image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+    volumes:
+    - airflow-vol:/opt/airflow:rw
+version: '3.7'
+volumes:
+  airflow-vol: {}
+  postgres-vol: {}
+

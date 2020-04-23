@@ -72,3 +72,59 @@ Or to align with tagging policy ``<airflow-version>-<data-pipeline-dags-tag>-<im
 .. note::
 
     Control version values by setting ``MAKESTER__VERSION`` and ``MAKESTER__RELEASE_NUMBER`` in the project `Makefile <https://github.com/loum/data-pipelines-infrastructure/blob/master/Makefile>`_.
+
+**********************
+Kubernetes Integration
+**********************
+
+Kubernetes shakeout and troubleshooting.
+
+Prerequisites
+=============
+
+- `Minikube <https://kubernetes.io/docs/tasks/tools/install-minikube/>`_
+- `kubectll <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_
+- `kompose <https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/#install-kompose>`_ if you would like to convert `docker-compose.yml` files to Kubernetes manifests
+
+(Optional) Convert existing ``docker-compose.yml`` to Kubernetes Manifests
+--------------------------------------------------------------------------
+
+Kubernetes provides the `kompose <https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes>`__ conversion tool that can help you migrate to Kubernetes from ``docker-compose``.  Ensure that your ``docker-compose.yml`` file exists in the top-level directory of your project repository.
+
+To create your Kubernetes manifests::
+
+    $ make k8s-manifests
+
+This will deposit the generated Kubernetes manifests under the ``./k8s`` directory.
+
+Create A Local Kubernetes Cluster (Minikube) and Create Resources
+-----------------------------------------------------------------
+
+Create a Pod and requires Services taken from manifests under ``./k8s`` directory::
+
+    $ make kube-apply
+
+Interact with Kubernetes Resources
+----------------------------------
+
+View the Pods and Services::
+
+    $ make kube-get
+
+Delete the Pods and Services::
+
+    $ make kube-del
+
+Bring up the Airflow Webserver UI
+---------------------------------
+
+The Kubernetes deployment will expose the Airflow Webserver UI that can be browsed to.  The URL can be obtained with::
+
+    $ minikube service webserver --url
+
+Cleanup Kubernetes
+------------------
+
+::
+
+    $ make mk-del

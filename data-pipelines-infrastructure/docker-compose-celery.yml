@@ -4,6 +4,8 @@ services:
     redis:
         image: redis:5.0.5
         container_name: airflow-redis
+        ports:
+            - ${REDIS_PORT}:${REDIS_PORT}
 
     postgres:
         image: postgres:9.6
@@ -15,9 +17,11 @@ services:
             - PGDATA=/var/lib/postgresql/data/pgdata
         volumes:
             - postgres-vol:/var/lib/postgresql/data/pgdata
+        ports:
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
     init-db:
-        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-initdb
         depends_on:
             - postgres
@@ -25,10 +29,11 @@ services:
             - ./files/envfile
         volumes:
             - airflow-vol:/opt/airflow/
+        restart: "no"
         command: initdb
 
     scheduler:
-        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-scheduler
         depends_on:
             - init-db
@@ -40,7 +45,7 @@ services:
         command: scheduler
 
     webserver:
-        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-webserver
         env_file:
             - ./files/envfile
@@ -50,10 +55,12 @@ services:
             - airflow-vol:/opt/airflow/
         ports:
             - ${AIRFLOW__WEBSERVER__WEB_SERVER_PORT}:${AIRFLOW__WEBSERVER__WEB_SERVER_PORT}
+        labels:
+            kompose.service.type: LoadBalancer
         command: webserver
 
     worker:
-        image: data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
         container_name: airflow-worker
         env_file:
             - ./files/envfile
