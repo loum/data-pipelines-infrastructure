@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: /usr/local/bin/kompose convert --out ./k8s
+    kompose.cmd: /usr/local/bin/kompose convert --out ./k8s/manifests
     kompose.service.type: LoadBalancer
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null

@@ -2,31 +2,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: /usr/local/bin/kompose convert --out ./k8s
+    kompose.cmd: /usr/local/bin/kompose convert --out ./k8s/manifests
+    kompose.service.type: LoadBalancer
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null
   labels:
-    io.kompose.service: worker
-  name: worker
+    io.kompose.service: webserver
+  name: webserver
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: worker
+      io.kompose.service: webserver
   strategy:
     type: Recreate
   template:
     metadata:
       annotations:
-        kompose.cmd: /usr/local/bin/kompose convert --out ./k8s
+        kompose.cmd: /usr/local/bin/kompose convert --out ./k8s/manifests
+        kompose.service.type: LoadBalancer
         kompose.version: 1.21.0 (992df58d8)
       creationTimestamp: null
       labels:
-        io.kompose.service: worker
+        io.kompose.service: webserver
     spec:
       containers:
       - args:
-        - worker
+        - webserver
         env:
         - name: AIRFLOW_HOME
           value: /opt/airflow/airflow
@@ -77,7 +79,9 @@ spec:
           value: redis://
         image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
         imagePullPolicy: ""
-        name: airflow-worker
+        name: airflow-webserver
+        ports:
+        - containerPort: 8888
         resources: {}
         volumeMounts:
         - mountPath: /opt/airflow

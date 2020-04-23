@@ -29,7 +29,7 @@ backoff:
 	@$(PYTHON) makester/scripts/backoff -d "Airflow web UI" -p $(AIRFLOW__WEBSERVER__WEB_SERVER_PORT) localhost
 
 k8s-manifests-clean:
-	$(shell which rm) -fr ./k8s/* 2>/dev/null || true
+	$(shell which rm) -fr ./k8s/manifests/* 2>/dev/null || true
 	$(MAKE) -s local-build-config > docker-compose.yml 2>/dev/null || true
 
 k8s-manifests: k8s-manifests-clean konvert
