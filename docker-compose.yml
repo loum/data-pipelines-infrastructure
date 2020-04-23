@@ -31,12 +31,13 @@ services:
       REDIS_PROTO: redis://
     image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
     restart: "no"
+    user: '50000'
     volumes:
     - airflow-vol:/opt/airflow:rw
   postgres:
     container_name: airflow-postgres
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
+      PGDATA: /var/lib/postgresql/data/pgdata/db-files
       POSTGRES_DB: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_USER: airflow
@@ -45,7 +46,7 @@ services:
     - published: 5432
       target: 5432
     volumes:
-    - postgres-vol:/var/lib/postgresql/data/pgdata:rw
+    - postgres-vol:/var/lib/postgresql/data/pgdata/db-files:rw
   redis:
     container_name: airflow-redis
     image: redis:5.0.5

@@ -60,6 +60,8 @@ spec:
     image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
     name: airflow-initdb
     resources: {}
+    securityContext:
+      runAsUser: 50000
     volumeMounts:
     - mountPath: /opt/airflow
       name: airflow-vol

@@ -14,9 +14,9 @@ services:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_DB=${POSTGRES_DB}
-            - PGDATA=/var/lib/postgresql/data/pgdata
+            - PGDATA=/var/lib/postgresql/data/pgdata/db-files
         volumes:
-            - postgres-vol:/var/lib/postgresql/data/pgdata
+            - postgres-vol:/var/lib/postgresql/data/pgdata/db-files
         ports:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
@@ -27,6 +27,7 @@ services:
             - postgres
         env_file:
             - ./files/envfile
+        user: "50000"
         volumes:
             - airflow-vol:/opt/airflow/
         restart: "no"
