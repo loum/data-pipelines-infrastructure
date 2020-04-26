@@ -22,7 +22,7 @@ AIRFLOW__CELERY__BROKER_URL={{ REDIS_PROTO }}{{ REDIS_PREFIX }}{{ REDIS_HOST }}:
 
 # airflow.cfg [core]
 AIRFLOW__CORE__EXECUTOR={{ AIRFLOW__CORE__EXECUTOR|default('SequentialExecutor') }}
-AIRFLOW__CORE__DAGS_FOLDER={{ AIRFLOW__CORE__DAGS_FOLDER|default('${AIRFLOW_HOME}/dags') }}
+AIRFLOW__CORE__DAGS_FOLDER={{ '/home/airflow/.local/lib/python' }}{{ '3.6'|env_override('PYTHON_MAJOR_MINOR_VERSION') }}{{ '/site-packages/' }}{{ 'data_pipelines_dags'|env_override('SITE_PACKAGES_NAME') }}{{ '/dags' }}
 AIRFLOW__CORE__BASE_LOG_FOLDER={{ AIRFLOW__CORE__BASE_LOG_FOLDER|default('${AIRFLOW_HOME}/logs') }}
 AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgres://{{ POSTGRES_USER }}:{{ POSTGRES_PASSWORD }}@{{ POSTGRES_HOST }}:{{ POSTGRES_PORT }}/{{ POSTGRES_DB }}{{ POSTGRES_EXTRAS }}
 AIRFLOW__CORE__PLUGINS_FOLDER={{ AIRFLOW__CORE__PLUGINS_FOLDER|default('${AIRFLOW_HOME}/plugins') }}

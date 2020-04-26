@@ -21,7 +21,7 @@ services:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
     init-db:
-        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: ${DATA_PIPELINES_IMAGE}
         container_name: airflow-initdb
         depends_on:
             - postgres
@@ -34,7 +34,7 @@ services:
         command: initdb
 
     scheduler:
-        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: ${DATA_PIPELINES_IMAGE}
         container_name: airflow-scheduler
         depends_on:
             - init-db
@@ -46,7 +46,7 @@ services:
         command: scheduler
 
     webserver:
-        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: ${DATA_PIPELINES_IMAGE}
         container_name: airflow-webserver
         env_file:
             - ./files/envfile
@@ -61,7 +61,7 @@ services:
         command: webserver
 
     worker:
-        image: loum/data-pipelines-infrastructure:1.10.10-0.0.0-1
+        image: ${DATA_PIPELINES_IMAGE}
         container_name: airflow-worker
         env_file:
             - ./files/envfile

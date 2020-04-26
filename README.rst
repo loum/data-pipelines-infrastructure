@@ -6,6 +6,12 @@ Infrastructure component of a Data Workflow Management system using these compon
 
 - `Airflow <https://airflow.apache.org/docs/1.10.10/>`_ | version 1.10.10
 
+This repository manages the customised Docker image build of Airflow.  The new Docker image is based on `Docker Hub apache/airflow <https://hub.docker.com/r/apache/airflow>`_.  Customised Airflow DAGs and Plugins are built into the image and must be installable as a Python ``pip`` package.  This provides an immutable deploy bound within the Docker container during run time.  The dependent DAG ``pip`` install defaults to a `simple Airflow DAG bookend example <https://github.com/loum/data-pipelines-dags>`_.
+
+.. note::
+
+    The dependent DAG ``pip`` install can be overriden to suit your project's requirements as detailed under `Image Build`_.
+
 *************
 Prerequisties
 *************
@@ -37,6 +43,33 @@ Setup the environment::
 
     $ make init
 
+************
+Getting Help
+************
+
+There should be a ``make`` target to be able to get most things done.  Check the help for more information::
+
+    $ make help
+
+***********
+Image Build
+***********
+
+The image build process takes the `Docker Hub apache/airflow <https://hub.docker.com/r/apache/airflow>`_ image and installs a Python package of custom Airflow DAGs and Plugin definitions via the normal Python package management process using ``pip``.  The upstream dependency for the Airflow image build is defined by the ``DATA_PIPELINES_DAG_REPO`` variable in the ``Makefile``.  This defaults to ``git+https://github.com/loum/data-pipelines-dags.git@0.0.0`` which is a simple DAG for the purposes of satisfying the requirement of our new Docker image build.  To start the default ``data-pipelines-infrastructure`` Docker image build::
+
+    $ make build-image
+
+To list the available ``data-pipelines-infrastructure`` Docker images::
+
+    $ make search-image
+
+On the successful build of the Docker image, the typical output would be::
+
+    REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
+    data-pipelines-infrastructure   eda36a5             0671ab41ad37        19 hours ago        766MB
+
+Here, the ``TAG`` is important as it identifies the local ``data-pipelines-infrastructure`` build and is used directly in the `Infrastructure Build and Setup`_.
+
 ******************************
 Infrastructure Build and Setup
 ******************************
@@ -44,11 +77,21 @@ Infrastructure Build and Setup
 Start Infrastructure Components
 ===============================
 
-To build a Dockerised Airflow instance running under `Celery Executor mode <https://airflow.apache.org/docs/1.10.10/executor/celery.html?highlight=celery%20executor>`_::
+.. note::
+
+    Triggering the ``local-build-up`` target forces a ``make build-image`` to ensure a ``data-pipelines-infrastructure`` Docker image exists locally.
+
+To build a Dockerised Airflow platform running under `Celery Executor mode <https://airflow.apache.org/docs/1.10.10/executor/celery.html?highlight=celery%20executor>`_::
 
     $ make local-build-up
 
-Naviagate to the `Airflow Console <http://localhost:8080/>`_
+Navigate to the Airflow console `<http://localhost:\<AIRFLOW__WEBSERVER__WEB_SERVER_PORT\>>`_
+
+.. note::
+
+   The ``AIRFLOW__WEBSERVER__WEB_SERVER_PORT`` value can be identified with::
+
+      make print-AIRFLOW__WEBSERVER__WEB_SERVER_PORT
 
 Destroy Infrastructure Components
 =================================
