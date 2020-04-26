@@ -1,7 +1,8 @@
 # Project files.
 #
 data-pipelines-infrastructure/files/envfile
-env.mk
+*env.mk
+docker-compose-k8s-ephemeral.yml
 
 *.py[cod]
 *.swp

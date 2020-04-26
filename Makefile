@@ -43,11 +43,12 @@ backoff:
 
 k8s-manifests-clean:
 	$(shell which rm) -fr ./k8s/manifests/* 2>/dev/null || true
-	$(MAKE) -s local-build-config > docker-compose.yml 2>/dev/null || true
+	$(MAKE) -s local-build-config > ${MAKESTER__COMPOSE_K8S_EPHEMERAL} 2>/dev/null || true
 
+k8s-manifests: MAKESTER__COMPOSE_K8S_EPHEMERAL = docker-compose-k8s-ephemeral.yml
 k8s-manifests: k8s-manifests-clean konvert
 
-compose-run: env.mk export
+compose-run: export
 	@MAKESTER__SERVICE_NAME=$(MAKESTER__SERVICE_NAME) HASH=$(HASH)\
  $(DOCKER_COMPOSE) --project-directory $(MAKESTER__SERVICE_NAME)\
  $(COMPOSE_FILES) $(COMPOSE_CMD)
@@ -63,6 +64,10 @@ local-build-up: build-image
 	$(MAKE) local-build-airflow
 	$(MAKE) backoff
 
+k8s-build-up: mk-start mk-docker-env-export build-image k8s-manifests kube-apply kube-get
+
+k8s-build-down: mk-docker-env-export kube-del mk-del
+
 SE_COMPOSE_FILES = -f $(MAKESTER__SERVICE_NAME)/docker-compose-celery.yml
 start-airflow-db local-build-config init-airflow-db local-build-airflow local-build-down: COMPOSE_FILES = $(SE_COMPOSE_FILES)
 CELERY_EXECUTOR_COMPOSE_FILES = -f $(MAKESTER__SERVICE_NAME)/docker-compose-celery.yml
@@ -72,9 +77,11 @@ start-airflow-db local-build-config init-airflow-db local-build-airflow local-bu
 help: base-help python-venv-help docker-help compose-help k8s-help
 	@echo "(Makefile)\n\
   init                 Build the local Python-based virtual environment\n\
-  k8s-manifests        Genereate the K8s manifests from the local docker-compose.yml\n\
+  k8s-manifests        Genereate the K8s manifests from the local \"MAKESTER__COMPOSE_K8S_EPHEMERAL\" file\n\
   local-build-config   Display local Data Workflow docker-compose configuration (Airflow Sequential Executor)\n\
   local-build-up       Create local Data Workflow infrastructure and intialisation (Airflow Sequential Executor)\n\
-  local-build-down     Destroy local Data Workflow infrastructure (Airflow Sequential Executor)\n"
+  local-build-down     Destroy local Data Workflow infrastructure (Airflow Sequential Executor)\n\
+  k8s-build-up         Create local Data Workflow infrastructure and intialisation on k8s (Airflow Celery Executor)\n\
+  k8s-build-down       Destroy local Data Workflow infrastructure on k8s (Airflow Celery Executor)\n"
 
 .PHONY: help env.mk
